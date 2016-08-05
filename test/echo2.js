@@ -9,7 +9,7 @@ var server = createServer(function (stream) {
     stream.source,
     pull.through(function (data) {
       console.log('THROUGH', data)
-    },function (err) {
+    }, function (err) {
       console.log('END', err)
     }),
     stream.sink)
@@ -17,9 +17,9 @@ var server = createServer(function (stream) {
 
 console.log('server', server)
 
-//setTimeout(function () {
+// setTimeout(function () {
 
-var client =  connect(9988, '127.0.0.1')
+var client = connect(9988, '127.0.0.1')
 
 //, function (err, stream) {
 //    if(err) throw err
@@ -33,7 +33,7 @@ var client =  connect(9988, '127.0.0.1')
 //      })
 //    )
 //  })
-//},100)
+// },100)
 
 pull(
   pull.values([new Buffer('HELLO THERE')]),
@@ -43,4 +43,3 @@ pull(
     server.close()
   })
 )
-

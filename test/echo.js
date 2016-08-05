@@ -5,19 +5,19 @@ var toPull = require('stream-to-pull-stream')
 
 var createServer = require('../server')
 
-var server = createServer(1234, 'localhost', function (stream) {
+var server = createServer(function (stream) {
   console.log(stream)
   pull(
     stream.source,
     pull.through(function (data) {
       console.log('THROUGH', data)
-    },function (err) {
+    }, function (err) {
       console.log('END', err)
     }),
     stream.sink)
-})
+}).listen(9090, '127.0.0.1')
 
-var client = net.connect(1234, 'localhost')
+var client = net.connect(9090, '127.0.0.1')
 pull(
   pull.values([new Buffer('HELLO THERE')]),
   toPull.duplex(client),

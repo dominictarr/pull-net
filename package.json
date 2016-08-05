@@ -1,7 +1,7 @@
 {
   "name": "pull-net",
-  "description": "",
-  "version": "0.0.0",
+  "description": "A replacement for net using pull streams all the way",
+  "version": "0.1.0",
   "homepage": "https://github.com/dominictarr/pull-net",
   "repository": {
     "type": "git",
@@ -13,10 +13,12 @@
   },
   "devDependencies": {
     "pull-stream": "^3.4.0",
+    "standard": "^7.1.2",
     "stream-to-pull-stream": "^1.6.8"
   },
   "scripts": {
-    "test": "set -e; for t in test/*.js; do node $t; done"
+    "test": "set -e; for t in test/*.js; do node $t; done",
+    "lint": "standard"
   },
   "author": "'Dominic Tarr' <dominic.tarr@gmail.com> (dominictarr.com)",
   "license": "MIT"

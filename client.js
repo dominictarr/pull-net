@@ -5,6 +5,7 @@ var pull = require('pull-stream')
 var net = require('net')
 
 module.exports = function (port, address, cb) {
+  cb = cb || function () {}
   port |= 0
   var clientHandle = new TCP()
   var connect = new TCPConnectWrap()
@@ -23,21 +24,13 @@ module.exports = function (port, address, cb) {
     err = clientHandle.connect6(connect, address, port)
   }
 
-  // stream = err ? Handle(clientHandle, function () {}) : pull.error(err)
-  // if (!err) return Handle(clientHandle, function () {})
-  // if (err) return cb(new Error('error connecting 2:' + err))
-
-  // so, I could actually return the client stream syncly.
-
- if (err) {
-   console.log('ERROR', err)
-   err = new Error('connection failed: ' + err)
-   return {
-     source: pull.error(err),
-     sink: function () {
-       return function (read) { read(err, cb) }
-     }
-   }
- }
- return Handle(clientHandle, cb)
+  if (err) {
+    console.log('ERROR', err)
+    err = new Error('connection failed: ' + err)
+    return {
+      source: pull.error(err),
+      sink: function (read) { read(err, cb) }
+    }
+  }
+  return Handle(clientHandle, cb)
 }
