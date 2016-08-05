@@ -1,7 +1,7 @@
 {
   "name": "pull-net",
   "description": "A replacement for net using pull streams all the way",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "homepage": "https://github.com/dominictarr/pull-net",
   "repository": {
     "type": "git",
