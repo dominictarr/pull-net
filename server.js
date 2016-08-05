@@ -1,40 +1,53 @@
-var TCP = process.binding('tcp_wrap').TCP;
+var TCP = process.binding('tcp_wrap').TCP
+var net = require('net')
 var Handle = require('./handle')
 
-function noop() {}
+function noop () {}
 
 module.exports = function (onConnect) {
-  var server = new TCP();
+  var server = new TCP()
 
   return {
     listen: function (port, addr, cb) {
-      var err = server.bind(addr, port)
-      if(err) throw Error('could not bind') //server.close(), cb && cb(err)
+      cb = cb || noop
+      var err
+      if (net.isIPv6(addr)) {
+        err = server.bind6(addr, port)
+      } else {
+        err = server.bind(addr, port)
+      }
 
-      //512 connections allowed in backlog
+      if (err) {
+        server.close()
+        cb(err)
+        return
+      }
+
+      // 512 connections allowed in backlog
       server.listen(511)
 
-      server.onconnection = function(err, client) {
-        if (err) return console.error(new Error('error connected:'+err))
+      server.onconnection = function (err, client) {
+        if (err) {
+          return console.error(new Error('error connected:' + err))
+        }
         onConnect(Handle(client, noop))
       }
       return server
     },
-    close: function () {
-      server.close()
+    address: function () {
+      if (server && server.getsockname) {
+        var out = {}
+        server.getsockname(out)
+        return out
+      } else if (this._pipeName) {
+        return this._pipeName
+      } else {
+        return null
+      }
+    },
+    close: function (cb) {
+      server.close(cb)
       return server
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-

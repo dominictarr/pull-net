@@ -1,33 +1,43 @@
 var Handle = require('./handle')
-var TCP = process.binding('tcp_wrap').TCP;
-var TCPConnectWrap = process.binding('tcp_wrap').TCPConnectWrap;
+var TCP = process.binding('tcp_wrap').TCP
+var TCPConnectWrap = process.binding('tcp_wrap').TCPConnectWrap
+var pull = require('pull-stream')
+var net = require('net')
 
 module.exports = function (port, address, cb) {
+  port |= 0
   var clientHandle = new TCP()
-  var connect = new TCPConnectWrap(), stream
+  var connect = new TCPConnectWrap()
+  var stream
 
-  connect.oncomplete = function (err) {
-    if(err) return cb(new Error('error connecting 1:'+err))
+  connect.port = port
+  connect.address = address
+  connect.oncomplete = function afterConnect (err) {
+    if (err) return cb(new Error('error connecting 1:' + err))
     cb && cb(null, stream)
   }
-  var err = clientHandle.connect(connect, address, port);
+  var err
+  if (net.isIPv4) {
+    err = clientHandle.connect(connect, address, port)
+  } else {
+    err = clientHandle.connect6(connect, address, port)
+  }
 
-  stream = err ? Handle(clientHandle, function () {}) : error.duplex(err)
-  if(!err) return Handle(clientHandle, function () {})
-  if(err) return cb(new Error('error connecting 2:'+err))
+  // stream = err ? Handle(clientHandle, function () {}) : pull.error(err)
+  // if (!err) return Handle(clientHandle, function () {})
+  // if (err) return cb(new Error('error connecting 2:' + err))
 
-//so, I could actually return the client stream syncly.
+  // so, I could actually return the client stream syncly.
 
-
-//
-//  if(err) {
-//    console.log("ERROR", err)
-//    err = new Error('connection failed:'+err)
-//    return {
-//      source: Error(err),
-//      sink: function (read) {read(err, cb)}
-//    }
-//  }
-//  return Handle(clientHandle, cb)
+ if (err) {
+   console.log('ERROR', err)
+   err = new Error('connection failed: ' + err)
+   return {
+     source: pull.error(err),
+     sink: function () {
+       return function (read) { read(err, cb) }
+     }
+   }
+ }
+ return Handle(clientHandle, cb)
 }
-
