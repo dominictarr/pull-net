@@ -25,7 +25,6 @@ module.exports = function (port, address, cb) {
   }
 
   if (err) {
-    console.log('ERROR', err)
     err = new Error('connection failed: ' + err)
     return {
       source: pull.error(err),
@@ -34,3 +33,4 @@ module.exports = function (port, address, cb) {
   }
   return Handle(clientHandle, cb)
 }
+
