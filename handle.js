@@ -32,7 +32,7 @@ module.exports = function (handle, cb) {
     end.async = false
     end.handle = handle
     end.oncomplete = function (_, __, ___, err) {
-      cb(err)
+      cb && cb(err)
     }
     handle.shutdown(end)
   }
@@ -42,7 +42,7 @@ module.exports = function (handle, cb) {
       if (abort) {
         shutdown(function (err) {
           _cb(err || abort)
-          cb(err)
+          cb && cb(err)
         })
       }
 

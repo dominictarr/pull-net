@@ -9,20 +9,22 @@ or nice error messages etc.
 
 ``` js
 var createServer = require('pull-net/server')
+var connect = require('pull-net/client')
 
 createServer(function (stream) {
   pull(stream.source, stream.sink) //ECHO
-}).listen(9999, '127.0.0.1')
+}).listen(9999, function (err) {
 
-var connect = require('pull-net/client')
+  connect(9999, function (err, stream) {
 
-var stream = connect(9999, '127.0.0.1')
+    pull(
+      pull.once(new Buffer('hello tcp')),
+      stream,
+      pull.collect(console.log)
+    )
 
-pull(
-  pull.once(new Buffer('hello tcp')),
-  stream,
-  pull.collect(console.log)
-)
+  })
+})
 ```
 
 ## Questions
@@ -47,3 +49,4 @@ what if a server was a stream of clients? does that really help?
 ## License
 
 MIT
+

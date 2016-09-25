@@ -17,29 +17,18 @@ var server = createServer(function (stream) {
 
 console.log('server', server)
 
-// setTimeout(function () {
+var client = connect(9988, '127.0.0.1', function (err, stream) {
+  if(err) throw err
 
-var client = connect(9988, '127.0.0.1')
+  pull(
+    pull.values([new Buffer('HELLO THERE')]),
+    stream,
+    pull.drain(console.log, function () {
+      console.log('END')
+      server.close()
+    })
+  )
 
-//, function (err, stream) {
-//    if(err) throw err
-//    console.log(err, stream)
-//    pull(
-//      pull.values([new Buffer('HELLO THERE')]),
-//      stream,
-//      pull.drain(console.log, function () {
-//        console.log('END')
-//        server.close()
-//      })
-//    )
-//  })
-// },100)
+})
 
-pull(
-  pull.values([new Buffer('HELLO THERE')]),
-  client,
-  pull.drain(console.log, function () {
-    console.log('END')
-    server.close()
-  })
-)
+
