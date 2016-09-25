@@ -14,7 +14,8 @@
   "devDependencies": {
     "pull-stream": "^3.4.0",
     "standard": "^7.1.2",
-    "stream-to-pull-stream": "^1.6.8"
+    "stream-to-pull-stream": "^1.7.1",
+    "tape": "^4.6.0"
   },
   "scripts": {
     "test": "set -e; for t in test/*.js; do node $t; done",
