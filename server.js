@@ -2,14 +2,15 @@ var TCP = process.binding('tcp_wrap').TCP
 var net = require('net')
 var Handle = require('./handle')
 var errno = require('util')._errnoException
-function noop () {}
+
+var lookup = require('dns').lookup
 
 module.exports = function (onConnect) {
   var server = new TCP()
   var host, port
   return {
     listen: function (opts, cb) {
-      if('object' == typeof port) {
+      if('object' == typeof opts) {
         host = opts.host || '0.0.0.0'
         port = opts.port | 0
       }
@@ -17,7 +18,7 @@ module.exports = function (onConnect) {
         port = opts
         host = '0.0.0.0'
       }
-      cb = cb || noop
+      cb = cb || function (err) { if(err) throw err }
       var err
 
       function listen (host, port, cb) {
@@ -46,7 +47,7 @@ module.exports = function (onConnect) {
       else {
         lookup(host, function (err, ip) {
           if(err) cb(err)
-          else listen(host, port, cb)
+          else listen(ip, port, cb)
         })
       }
 
