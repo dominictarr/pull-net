@@ -18,9 +18,10 @@ module.exports = function (port, address, cb) {
     cb && cb(null, stream)
   }
   var err
-  if (net.isIPv4) {
+  if (net.isIPv4(address)) {
     err = clientHandle.connect(connect, address, port)
   } else {
+    console.log('IPV6')
     err = clientHandle.connect6(connect, address, port)
   }
 
