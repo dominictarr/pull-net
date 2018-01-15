@@ -71,7 +71,8 @@ module.exports = function (handle, cb) {
             if (err) return read(err, cb)
             else read(null, next)
           }
-          if (handle.writeBuffer(write, data) === 0) {
+          handle.writeBuffer(write, data)
+          if (handle.writeQueueSize < HIGH) {
             write.oncomplete = noop
             read(null, next)
           }
@@ -80,3 +81,9 @@ module.exports = function (handle, cb) {
     }
   }
 }
+
+
+
+
+
+
