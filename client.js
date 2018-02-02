@@ -1,13 +1,13 @@
 var Handle = require('./handle')
-var TCP = process.binding('tcp_wrap').TCP
-var TCPConnectWrap = process.binding('tcp_wrap').TCPConnectWrap
+var TCPWrap = process.binding('tcp_wrap')
+var TCPConnectWrap = TCPWrap.TCPConnectWrap
 var pull = require('pull-stream')
 var net = require('net')
 
 module.exports = function (port, address, cb) {
   cb = cb || function () {}
   port |= 0
-  var clientHandle = new TCP()
+  var clientHandle = TCPWrap.constants ? new TCPWrap.TCP(TCPWrap.constants.SOCKET) : new TCPWrap.TCP()
   var connect = new TCPConnectWrap()
   var stream
 
@@ -18,9 +18,10 @@ module.exports = function (port, address, cb) {
     cb && cb(null, stream)
   }
   var err
-  if (net.isIPv4) {
+  if (net.isIPv4(address)) {
     err = clientHandle.connect(connect, address, port)
   } else {
+    console.log('IPV6')
     err = clientHandle.connect6(connect, address, port)
   }
 

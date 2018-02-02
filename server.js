@@ -1,11 +1,11 @@
-var TCP = process.binding('tcp_wrap').TCP
+var TCPWrap = process.binding('tcp_wrap')
 var net = require('net')
 var Handle = require('./handle')
 
 function noop () {}
 
 module.exports = function (onConnect) {
-  var server = new TCP()
+  var server = TCPWrap.constants ? new TCPWrap.TCP(TCPWrap.constants.SERVER) : new TCPWrap.TCP()
 
   return {
     listen: function (port, addr, cb) {
